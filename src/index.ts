@@ -1,8 +1,10 @@
 import { Application } from "./app";
 
-function bootstrap() {
-  const application = new Application();
-  application.run();
-}
-
-bootstrap();
+(async function () {
+  try {
+    const application = new Application();
+    await application.run();
+  } catch (e) {
+    console.log(e);
+  }
+})();
