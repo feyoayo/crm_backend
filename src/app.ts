@@ -1,11 +1,16 @@
 import express, { Express } from "express";
 import bodyParser from "body-parser";
-
+import cors from "cors";
+import morgan from "morgan";
+import * as dotenv from "dotenv";
 import { AnalyticsController } from "./analytics/analytics.controller";
 import { AuthController } from "./auth/auth.controller";
 import { CategoryController } from "./category/category.controller";
 import { OrderController } from "./order/order.controller";
 import { PositionController } from "./position/position.controller";
+import databaseConnection, {
+  DatabaseConnection,
+} from "./utils/databaseConnection";
 
 export class Application {
   app: Express;
@@ -15,6 +20,7 @@ export class Application {
   categoryController: CategoryController;
   positionController: PositionController;
   analyticsController: AnalyticsController;
+  databaseConnection: DatabaseConnection;
   constructor() {
     this.app = express();
     this.port = 8888;
@@ -23,11 +29,14 @@ export class Application {
     this.categoryController = new CategoryController();
     this.positionController = new PositionController();
     this.analyticsController = new AnalyticsController();
+    this.databaseConnection = databaseConnection;
   }
 
   applyMiddlewares() {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(morgan("dev"));
+    this.app.use(cors());
   }
 
   applyRoutes() {
@@ -38,12 +47,20 @@ export class Application {
     this.app.use("/analytics", this.analyticsController.router);
   }
 
-  run() {
-    this.applyMiddlewares();
-    this.applyRoutes();
+  async run() {
+    try {
+      dotenv.config();
+      this.applyMiddlewares();
+      this.applyRoutes();
 
-    this.app.listen(this.port, () => {
-      console.log(`Server started on ${this.port}`);
-    });
+      await this.databaseConnection.connect();
+
+      this.app.listen(this.port, () => {
+        console.log(`Server started on ${this.port}`);
+      });
+    } catch (e) {
+      console.log("Server start issue");
+      await this.databaseConnection.disconnect();
+    }
   }
 }
