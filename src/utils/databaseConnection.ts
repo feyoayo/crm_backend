@@ -15,7 +15,7 @@ export class DatabaseConnection {
   async connect() {
     try {
       await this.db.connect(
-        `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@mean.j8hqeog.mongodb.net/?retryWrites=true&w=majority`
+        `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@mean.j8hqeog.mongodb.net/application` ///?retryWrites=true&w=majority
       );
       console.log("DB Connected successfully");
     } catch (e) {

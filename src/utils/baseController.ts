@@ -4,21 +4,28 @@ import { IControllerPath } from "../types/controller-path";
 export abstract class BaseController {
   private readonly _router: Router;
 
-  constructor() {
+  protected constructor() {
     this._router = Router();
+    this.errorMessage = this.errorMessage.bind(this);
   }
 
   get router() {
     return this._router;
   }
-
-  public ok(res: Response, message: string) {
-    return res.status(200).json({ status: "ok", message });
+  public created<T>(res: Response, data: T) {
+    return res.status(201).json({ status: "created", data });
+  }
+  public ok<T>(res: Response, data: T) {
+    return res.status(200).json({ status: "ok", data });
+  }
+  public errorMessage(res: Response, message: string, code: number = 400) {
+    return res.status(code).json({ status: false, message });
   }
 
   protected bindRoutes(routes: IControllerPath[]) {
     for (let route of routes) {
-      this.router[route.method](route.path, route.handler);
+      const handler = route.handler.bind(this);
+      this.router[route.method](route.path, handler);
     }
   }
 }
