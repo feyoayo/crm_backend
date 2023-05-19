@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { BaseController } from "../utils/baseController";
+import { BaseController } from "../../utils/baseController";
 
 export class AnalyticsController extends BaseController {
   constructor() {
