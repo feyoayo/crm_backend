@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import { Schema } from "mongoose";
-import { SCHEMA_NAMES } from "src/utils/schemaNames";
+import { SCHEMA_NAMES } from "../utils/schemaNames";
 
 const CategorySchema = new mongoose.Schema({
   name: {

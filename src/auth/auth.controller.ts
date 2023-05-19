@@ -1,8 +1,8 @@
-import { Request, Response, Router } from "express";
+import { Request, Response } from "express";
 import { BaseController } from "../utils/baseController";
-import { UserRegistrationDto } from "./dto/user-registration.dto";
 import { MongooseError } from "mongoose";
 import { AuthService } from "./auth.service";
+import { UserLoginDto, UserRegistrationDto } from "./dto";
 
 export class AuthController extends BaseController {
   private authService: AuthService;
@@ -10,12 +10,12 @@ export class AuthController extends BaseController {
     super();
     this.authService = new AuthService();
     this.bindRoutes([
-      { path: "/login", method: "put", handler: this.put },
-      { path: "/registration", method: "post", handler: this.post },
+      { path: "/login", method: "post", handler: this.login },
+      { path: "/registration", method: "post", handler: this.registration },
     ]);
   }
 
-  async post(req: Request<{}, {}, UserRegistrationDto>, res: Response) {
+  async registration(req: Request<{}, {}, UserRegistrationDto>, res: Response) {
     try {
       const data = req.body;
       const user = await this.authService.userRegistration(data);
@@ -32,7 +32,20 @@ export class AuthController extends BaseController {
       return this.errorMessage(res, "User not registered", 401);
     }
   }
-  put(req: Request, res: Response) {
-    return res.json({ status: "ok", body: req.body });
+  async login(req: Request<{}, {}, UserLoginDto>, res: Response) {
+    try {
+      const userLogin = await this.authService.userLogin(req.body);
+      if (userLogin === "User not exist") {
+        return this.errorMessage(res, "User not exist", 404);
+      }
+      if (userLogin === "Login error") {
+        return this.errorMessage(res, "Login error", 400);
+      }
+      return this.ok(res, { token: userLogin });
+    } catch (e) {
+      const error = e as MongooseError;
+      console.log(error.message);
+      return this.errorMessage(res, "Login error", 401);
+    }
   }
 }
