@@ -4,7 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import * as dotenv from "dotenv";
 import { AnalyticsController } from "./modules/analytics/analytics.controller";
-import { AuthController } from "./auth/auth.controller";
+import { AuthController } from "./modules/auth/auth.controller";
 import { CategoryController } from "./modules/category/category.controller";
 import { OrderController } from "./modules/order/order.controller";
 import { PositionController } from "./modules/position/position.controller";

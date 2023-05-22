@@ -1,3 +1,3 @@
 import UserAuthToken from "./userAuthToken";
-
-export { UserAuthToken };
+import EncryptPassword from "./encryptPassword";
+export { UserAuthToken, EncryptPassword };

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { BaseController } from "../utils/baseController";
 import { MongooseError } from "mongoose";
-import { AuthService } from "./auth.service";
-import { UserLoginDto, UserRegistrationDto } from "./dto";
+import {UserRegistrationDto, UserLoginDto} from "./dto";
+import {BaseController} from "../../utils/baseController";
+import {AuthService} from "./auth.service";
 
 export class AuthController extends BaseController {
   private authService: AuthService;

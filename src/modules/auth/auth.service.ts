@@ -1,7 +1,6 @@
-import { AuthRepository } from "./auth.repository";
-import { UserLoginDto, UserRegistrationDto } from "./dto";
-import { UserAuthToken } from "../utils";
-import EncryptPassword from "../utils/encryptPassword";
+import {AuthRepository} from "./auth.repository";
+import {UserRegistrationDto, UserLoginDto} from "./dto";
+import {UserAuthToken, EncryptPassword} from "../../utils";
 
 export class AuthService {
   private authRepository: AuthRepository;

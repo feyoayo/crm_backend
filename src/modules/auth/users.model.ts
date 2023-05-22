@@ -1,5 +1,5 @@
 import * as mongoose from "mongoose";
-import { SCHEMA_NAMES } from "../utils/schemaNames";
+import {SCHEMA_NAMES} from "../../utils/schemaNames";
 
 const UsersSchema = new mongoose.Schema({
   createdAt: {

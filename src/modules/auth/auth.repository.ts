@@ -1,5 +1,5 @@
+import {UserRegistrationDto} from "./dto";
 import UsersModel from "./users.model";
-import { UserRegistrationDto } from "./dto/user-registration.dto";
 
 export class AuthRepository {
   async findUser(email: string) {
