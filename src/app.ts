@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import morgan from "morgan";
+import passport from "passport";
 import * as dotenv from "dotenv";
 import { AnalyticsController } from "./modules/analytics/analytics.controller";
 import { AuthController } from "./modules/auth/auth.controller";
@@ -11,6 +12,7 @@ import { PositionController } from "./modules/position/position.controller";
 import databaseConnection, {
   DatabaseConnection,
 } from "./utils/databaseConnection";
+import passportJwtConfig from "./config/passport-jwt.config";
 
 export class Application {
   app: Express;
@@ -37,6 +39,7 @@ export class Application {
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(morgan("dev"));
     this.app.use(cors());
+    this.app.use(passport.initialize());
   }
 
   applyRoutes() {
@@ -47,9 +50,14 @@ export class Application {
     this.app.use("/analytics", this.analyticsController.router);
   }
 
+  runConfigs() {
+    dotenv.config();
+    passportJwtConfig.run();
+  }
+
   async run() {
     try {
-      dotenv.config();
+      this.runConfigs();
       this.applyMiddlewares();
       this.applyRoutes();
 
@@ -59,6 +67,7 @@ export class Application {
         console.log(`Server started on ${this.port}`);
       });
     } catch (e) {
+      console.log(e);
       console.log("Server start issue");
       await this.databaseConnection.disconnect();
     }

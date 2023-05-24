@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { IControllerPath } from "../types/controller-path";
 
 export abstract class BaseController {
@@ -25,7 +25,9 @@ export abstract class BaseController {
   protected bindRoutes(routes: IControllerPath[]) {
     for (let route of routes) {
       const handler = route.handler.bind(this);
-      this.router[route.method](route.path, handler);
+      const middlewares = route.middlewares?.map((m) => m) ?? [];
+      const pipeline = middlewares ? [...middlewares, handler] : handler;
+      this.router[route.method](route.path, pipeline);
     }
   }
 }

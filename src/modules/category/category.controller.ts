@@ -1,11 +1,17 @@
 import { Response, Request } from "express";
 import { BaseController } from "../../utils/baseController";
+import passport from "passport";
 
 export class CategoryController extends BaseController {
   constructor() {
     super();
     this.bindRoutes([
-      { path: "/", handler: this.getAll, method: "get" },
+      {
+        path: "/",
+        handler: this.getAll,
+        method: "get",
+        middlewares: [passport.authenticate("jwt", { session: false })],
+      },
       { path: "/", handler: this.post, method: "post" },
       { path: "/:id", handler: this.getById, method: "get" },
       { path: "/:id", handler: this.delete, method: "delete" },
