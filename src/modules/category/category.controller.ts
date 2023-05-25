@@ -1,6 +1,6 @@
-import { Response, Request } from "express";
+import { Request, Response } from "express";
 import { BaseController } from "../../utils/baseController";
-import passport from "passport";
+import { PassportJwtMiddleware } from "../../middlewares/passport-jwt.middleware";
 
 export class CategoryController extends BaseController {
   constructor() {
@@ -10,7 +10,7 @@ export class CategoryController extends BaseController {
         path: "/",
         handler: this.getAll,
         method: "get",
-        middlewares: [passport.authenticate("jwt", { session: false })],
+        middlewares: [new PassportJwtMiddleware().run()],
       },
       { path: "/", handler: this.post, method: "post" },
       { path: "/:id", handler: this.getById, method: "get" },
