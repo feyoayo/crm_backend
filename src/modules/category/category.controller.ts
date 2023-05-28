@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import { BaseController } from "../../utils/baseController";
 import { PassportJwtMiddleware } from "../../middlewares/passport-jwt.middleware";
+import { CategoryService } from "./category.service";
 
 export class CategoryController extends BaseController {
+  categoryService: CategoryService;
   constructor() {
     super();
+    this.categoryService = new CategoryService();
     this.bindRoutes([
       {
         path: "/",
@@ -12,47 +15,79 @@ export class CategoryController extends BaseController {
         method: "get",
         middlewares: [new PassportJwtMiddleware().run()],
       },
-      { path: "/", handler: this.post, method: "post" },
-      { path: "/:id", handler: this.getById, method: "get" },
-      { path: "/:id", handler: this.delete, method: "delete" },
-      { path: "/:id", handler: this.patch, method: "patch" },
+      {
+        path: "/",
+        handler: this.post,
+        method: "post",
+        middlewares: [new PassportJwtMiddleware().run()],
+      },
+      {
+        path: "/:id",
+        handler: this.getById,
+        method: "get",
+        middlewares: [new PassportJwtMiddleware().run()],
+      },
+      {
+        path: "/:id",
+        handler: this.delete,
+        method: "delete",
+        middlewares: [new PassportJwtMiddleware().run()],
+      },
+      {
+        path: "/:id",
+        handler: this.patch,
+        method: "patch",
+        middlewares: [new PassportJwtMiddleware().run()],
+      },
     ]);
   }
 
-  getAll(req: Request, res: Response) {
-    return res.status(200).json({
-      status: "Ok",
-      data: [],
-    });
+  async getAll(req: Request, res: Response) {
+    try {
+      const categories = await this.categoryService.getAllCategories(
+        req.user._id
+      );
+      return this.ok(res, categories);
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "Error while getting categories");
+    }
   }
-  getById(req: Request, res: Response) {
-    const id = req.params.id;
-    return res.status(200).json({
-      status: "Ok",
-      data: {},
-      id,
-    });
+  async getById(req: Request<{ id: string }>, res: Response) {
+    try {
+      const category = await this.categoryService.getCategoryById(
+        req.params.id
+      );
+      return this.ok(res, category);
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "Error while getting category");
+    }
   }
   post(req: Request, res: Response) {
-    return res.status(200).json({
-      status: "Ok",
-      data: {},
-    });
+    try {
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "");
+    }
   }
-  delete(req: Request, res: Response) {
-    const id = req.params.id;
-    return res.status(200).json({
-      status: "Ok",
-      data: {},
-      id,
-    });
+  async delete(req: Request<{ id: string }>, res: Response) {
+    try {
+      const id = req.params.id;
+      if (!id) return this.errorMessage(res, "Provide valid ID");
+      await this.categoryService.removeCategory(id);
+      return this.ok(res, "Category deleted");
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "");
+    }
   }
-  patch(req: Request, res: Response) {
-    const id = req.params.id;
-    return res.status(200).json({
-      status: "Ok",
-      data: {},
-      id,
-    });
+  patch(req: Request<{ id: string }>, res: Response) {
+    try {
+      const id = req.params.id;
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "");
+    }
   }
 }
