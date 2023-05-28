@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { BaseController } from "../../utils/baseController";
 import { PassportJwtMiddleware } from "../../middlewares/passport-jwt.middleware";
 import { CategoryService } from "./category.service";
-import { uploadFiles } from "../../middlewares/upload.middleware";
+import { uploadImageMiddleware } from "../../middlewares/upload-category-image.middleware";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 
@@ -22,10 +22,7 @@ export class CategoryController extends BaseController {
         path: "/",
         handler: this.post,
         method: "post",
-        middlewares: [
-          new PassportJwtMiddleware().run(),
-          uploadFiles.single("image"),
-        ],
+        middlewares: [new PassportJwtMiddleware().run(), uploadImageMiddleware],
       },
       {
         path: "/:id",
@@ -43,10 +40,7 @@ export class CategoryController extends BaseController {
         path: "/:id",
         handler: this.patch,
         method: "patch",
-        middlewares: [
-          new PassportJwtMiddleware().run(),
-          uploadFiles.single("image"),
-        ],
+        middlewares: [new PassportJwtMiddleware().run(), uploadImageMiddleware],
       },
     ]);
   }
@@ -82,6 +76,9 @@ export class CategoryController extends BaseController {
         user: req.user._id,
       };
       const category = await this.categoryService.createCategory(payload);
+      if (category === "Category with this name already exist") {
+        return this.errorMessage(res, category);
+      }
       if (category) {
         return this.created(res, category);
       }

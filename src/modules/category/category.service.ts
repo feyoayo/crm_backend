@@ -20,6 +20,8 @@ export class CategoryService {
     return true;
   }
   async createCategory(payload: CreateCategoryDto) {
+    const isExist = await this.categoryRepository.getByName(payload.name);
+    if (isExist) return "Category with this name already exist";
     return this.categoryRepository.create(payload);
   }
   async updateCategory(categoryId: string, payload: UpdateCategoryDto) {

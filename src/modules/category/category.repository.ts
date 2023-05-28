@@ -9,6 +9,9 @@ export class CategoryRepository {
   async getById(categoryId: string) {
     return CategoryModel.findById(categoryId);
   }
+  async getByName(name: string) {
+    return CategoryModel.findOne({ name });
+  }
   async deleteOne(categoryId: string) {
     return CategoryModel.findByIdAndDelete(categoryId);
   }

@@ -4,7 +4,7 @@ import { DateFormat } from "../utils/dateFormat";
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, "uploads/");
+    cb(null, "uploads/category/");
   },
   filename(req, file, cb) {
     const date = DateFormat.format();
@@ -31,3 +31,5 @@ export const uploadFiles = multer({
     fileSize: 1024 * 1024 * 5,
   },
 });
+
+export const uploadImageMiddleware = uploadFiles.single("image");
