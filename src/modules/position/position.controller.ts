@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { BaseController } from "../../utils/baseController";
 import PositionService from "./position.service";
 import { PassportJwtMiddleware } from "../../middlewares/passport-jwt.middleware";
+import { CreatePositionDto } from "./dto/create-position.dto";
+import { UpdatePositionDto } from "./dto/update-position.dto";
 
 export class PositionController extends BaseController {
   private positionService: PositionService;
@@ -33,13 +35,47 @@ export class PositionController extends BaseController {
       this.errorMessage(res, "Error while getting positions");
     }
   }
-  post(req: Request, res: Response) {
-    return res.send("post position");
+  async post(
+    req: Request<{}, {}, { cost: string; name: string; categoryId: string }>,
+    res: Response
+  ) {
+    try {
+      const { name, cost, categoryId } = req.body;
+      const payload: CreatePositionDto = {
+        user: req.user._id,
+        cost,
+        name,
+        category: categoryId,
+      };
+      const position = await this.positionService.createPosition(payload);
+      return this.created(res, position);
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "Error while position creation");
+    }
   }
-  patch(req: Request, res: Response) {
-    return res.send("patch position");
+  async patch(
+    req: Request<{ id: string }, {}, UpdatePositionDto>,
+    res: Response
+  ) {
+    try {
+      const position = await this.positionService.updatePosition(
+        req.params.id,
+        req.body
+      );
+      return this.ok(res, position);
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "Position update error");
+    }
   }
-  delete(req: Request, res: Response) {
-    return res.send("delete position");
+  async delete(req: Request<{ id: string }, {}, {}>, res: Response) {
+    try {
+      await this.positionService.deletePosition(req.params.id);
+      return this.ok(res, "Deleted successfully");
+    } catch (e) {
+      console.log(e);
+      return this.errorMessage(res, "Error while position delete");
+    }
   }
 }
