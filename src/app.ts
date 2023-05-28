@@ -48,6 +48,7 @@ export class Application {
     this.app.use("/api/category", this.categoryController.router);
     this.app.use("/api/position", this.positionController.router);
     this.app.use("/analytics", this.analyticsController.router);
+    this.app.use("/uploads", express.static("uploads"));
   }
 
   runConfigs() {

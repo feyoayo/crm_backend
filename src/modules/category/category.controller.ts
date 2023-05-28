@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { BaseController } from "../../utils/baseController";
 import { PassportJwtMiddleware } from "../../middlewares/passport-jwt.middleware";
 import { CategoryService } from "./category.service";
+import { uploadFiles } from "../../middlewares/upload.middleware";
+import { CreateCategoryDto } from "./dto/create-category.dto";
+import { UpdateCategoryDto } from "./dto/update-category.dto";
 
 export class CategoryController extends BaseController {
   categoryService: CategoryService;
@@ -19,7 +22,10 @@ export class CategoryController extends BaseController {
         path: "/",
         handler: this.post,
         method: "post",
-        middlewares: [new PassportJwtMiddleware().run()],
+        middlewares: [
+          new PassportJwtMiddleware().run(),
+          uploadFiles.single("image"),
+        ],
       },
       {
         path: "/:id",
@@ -37,7 +43,10 @@ export class CategoryController extends BaseController {
         path: "/:id",
         handler: this.patch,
         method: "patch",
-        middlewares: [new PassportJwtMiddleware().run()],
+        middlewares: [
+          new PassportJwtMiddleware().run(),
+          uploadFiles.single("image"),
+        ],
       },
     ]);
   }
@@ -64,8 +73,18 @@ export class CategoryController extends BaseController {
       return this.errorMessage(res, "Error while getting category");
     }
   }
-  post(req: Request, res: Response) {
+  async post(req: Request<{}, {}, { name: string }>, res: Response) {
     try {
+      const { name } = req.body;
+      const payload: CreateCategoryDto = {
+        name,
+        image: req.file ? req.file.path : "",
+        user: req.user._id,
+      };
+      const category = await this.categoryService.createCategory(payload);
+      if (category) {
+        return this.created(res, category);
+      }
     } catch (e) {
       console.log(e);
       return this.errorMessage(res, "");
@@ -82,12 +101,24 @@ export class CategoryController extends BaseController {
       return this.errorMessage(res, "");
     }
   }
-  patch(req: Request<{ id: string }>, res: Response) {
+  async patch(
+    req: Request<{ id: string }, {}, UpdateCategoryDto>,
+    res: Response
+  ) {
     try {
       const id = req.params.id;
+      const payload = req.body;
+      if (req.file) {
+        payload.image = req.file.path;
+      }
+      const updatedCategory = await this.categoryService.updateCategory(
+        id,
+        payload
+      );
+      this.ok(res, updatedCategory);
     } catch (e) {
       console.log(e);
-      return this.errorMessage(res, "");
+      return this.errorMessage(res, "Category update error");
     }
   }
 }
