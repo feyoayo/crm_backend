@@ -8,8 +8,8 @@ export class OrderService {
   }
   async getOrders(
     query: Record<string, unknown>,
-    offset: string,
-    limit: string
+    offset: string = "*",
+    limit: string = "*"
   ) {
     return this.orderRepository.getAll(query, +offset, +limit);
   }

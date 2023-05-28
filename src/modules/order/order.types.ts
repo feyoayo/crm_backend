@@ -7,8 +7,8 @@ export type OrderListItem = {
 };
 
 export interface GetOrdersQueryParams {
-  offset: string;
-  limit: string;
+  offset?: string;
+  limit?: string;
   start?: string;
   end?: string;
   order?: string;
