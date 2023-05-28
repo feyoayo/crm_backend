@@ -1,12 +1,23 @@
-import { Response, Request } from "express";
+import { Request, Response } from "express";
 import { BaseController } from "../../utils/baseController";
+import { PassportJwtMiddleware } from "../../middlewares/passport-jwt.middleware";
 
 export class OrderController extends BaseController {
   constructor() {
     super();
     this.bindRoutes([
-      { path: "/", method: "get", handler: this.get },
-      { path: "/", method: "post", handler: this.post },
+      {
+        path: "/",
+        method: "get",
+        handler: this.get,
+        middlewares: [new PassportJwtMiddleware().run()],
+      },
+      {
+        path: "/",
+        method: "post",
+        handler: this.post,
+        middlewares: [new PassportJwtMiddleware().run()],
+      },
     ]);
   }
   get(req: Request, res: Response) {
