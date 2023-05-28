@@ -1,15 +1,13 @@
 import multer, { FileFilterCallback } from "multer";
-import moment from "moment";
 import { Express, Request } from "express";
-
-const formatDate = () => moment().format("DDMMYYYY-HHmmss_SSS");
+import { DateFormat } from "../utils/dateFormat";
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, "uploads/");
   },
   filename(req, file, cb) {
-    const date = formatDate();
+    const date = DateFormat.format();
     cb(null, `${date}-${file.originalname}`);
   },
 });
